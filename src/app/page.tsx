@@ -1,14 +1,11 @@
-import { prisma } from "@/lib/prisma";
+import { Hero } from "@/components/hero";
+import { Newsletter } from "@/components/newsletter";
 
-export default async function Home() {
-  // fetch all users from the database
-  const users = await prisma.user.findMany();
-  console.log(users);
-
+export default function Home() {
   return (
     <div>
-      <h1>Welcome to Typaro!</h1>
-      <p>This is the home page of our application.</p>
+      <Hero />
+      <Newsletter />
     </div>
   );
 }
