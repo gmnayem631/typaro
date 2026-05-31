@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/themeProvider";
+import { SmoothScroll } from "@/components/smoothScroll";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
-import { SmoothScroll } from "@/components/smoothScroll";
+import { MainLayout } from "@/components/mainLayout";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,7 +19,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Typaro",
-  description: "Ai Intregated Blogging Platform",
+  description: "AI Integrated Blogging Platform",
 };
 
 export default function RootLayout({
@@ -34,13 +35,7 @@ export default function RootLayout({
     >
       <body className="flex min-h-full flex-col">
         <ThemeProvider>
-          <SmoothScroll>
-            <Navbar />
-            <main className="mx-auto w-full max-w-6xl flex-1 px-6">
-              {children}
-            </main>
-            <Footer />
-          </SmoothScroll>
+          <MainLayout>{children}</MainLayout>
         </ThemeProvider>
       </body>
     </html>
