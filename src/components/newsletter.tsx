@@ -72,11 +72,11 @@ export function Newsletter() {
         ) : (
           <div className="flex w-full max-w-sm flex-col gap-2 sm:flex-row">
             <input
+              suppressHydrationWarning
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={placeholder}
-              autoComplete="off"
               className="flex-1 rounded-md border border-border bg-transparent px-4 py-2.5 font-mono text-sm text-foreground transition-colors outline-none placeholder:text-muted-foreground/50 focus:border-foreground"
             />
             <button

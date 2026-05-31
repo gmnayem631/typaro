@@ -12,6 +12,12 @@ const VARIANTS = [
   "that last.",
 ];
 
+function getSharedPrefix(a: string, b: string) {
+  let i = 0;
+  while (i < a.length && i < b.length && a[i] === b[i]) i++;
+  return i;
+}
+
 type Phase = "typing-base" | "typing-variant" | "deleting" | "pause";
 
 export function Hero() {
@@ -55,16 +61,22 @@ export function Hero() {
     }
 
     if (phase === "deleting") {
-      const variant = VARIANTS[variantIndex];
-      if (charIndex < variant.length) {
+      const current = VARIANTS[variantIndex];
+      const next = VARIANTS[variantIndex + 1];
+      const sharedLen = getSharedPrefix(current, next);
+      const deleteDownTo = sharedLen; // keep shared prefix, delete the rest
+
+      const currentDisplayedVariantLen = current.length - charIndex;
+
+      if (currentDisplayedVariantLen > deleteDownTo) {
         timeout = setTimeout(() => {
-          setDisplayed(BASE + variant.slice(0, variant.length - charIndex - 1));
+          setDisplayed(BASE + current.slice(0, currentDisplayedVariantLen - 1));
           setCharIndex((i) => i + 1);
         }, 60);
       } else {
         timeout = setTimeout(() => {
           setVariantIndex((i) => i + 1);
-          setCharIndex(0);
+          setCharIndex(sharedLen); // start typing from shared prefix point
           setPhase("pause");
         }, 200);
       }
