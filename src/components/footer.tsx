@@ -5,8 +5,8 @@ import Link from "next/link";
 export function Footer() {
   return (
     <footer className="mt-auto border-t border-border py-8">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6">
-        <div className="flex items-center gap-6">
+      <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-6 sm:flex-row sm:justify-between">
+        <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-center sm:gap-6">
           <span className="font-serif text-sm text-foreground italic">
             Typaro
           </span>

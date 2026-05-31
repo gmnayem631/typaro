@@ -31,7 +31,7 @@ export function Hero() {
         }, 80);
       } else {
         setTimeout(() => {
-          setCharIndex(0);  
+          setCharIndex(0);
           setPhase("typing-variant");
         }, 0);
       }
@@ -80,7 +80,7 @@ export function Hero() {
   }, [phase, charIndex, variantIndex]);
 
   return (
-    <section className="relative flex min-h-[calc(100vh-64px)] flex-col items-center justify-center px-6 text-center">
+    <section className="relative flex min-h-[calc(100vh-200px)] flex-col items-center justify-center px-6 text-center md:min-h-[calc(100vh-64px)]">
       {/* Eyebrow */}
       <span className="mb-6 font-mono text-xs tracking-[0.25em] text-muted-foreground uppercase">
         A place to write

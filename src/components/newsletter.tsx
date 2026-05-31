@@ -16,7 +16,6 @@ export function Newsletter() {
   const [charIndex, setCharIndex] = useState(0);
   const [deleting, setDeleting] = useState(false);
 
-   
   useEffect(() => {
     const current = PLACEHOLDERS[pIndex];
     let timeout: ReturnType<typeof setTimeout>;
@@ -71,18 +70,19 @@ export function Newsletter() {
             _ you&apos;re in. watch your inbox.
           </p>
         ) : (
-          <div className="flex w-full max-w-sm gap-2">
+          <div className="flex w-full max-w-sm flex-col gap-2 sm:flex-row">
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={placeholder}
+              autoComplete="off"
               className="flex-1 rounded-md border border-border bg-transparent px-4 py-2.5 font-mono text-sm text-foreground transition-colors outline-none placeholder:text-muted-foreground/50 focus:border-foreground"
             />
             <button
               type="button"
               onClick={handleSubmit}
-              className="rounded-md bg-foreground px-4 py-2.5 text-sm text-background transition-colors hover:bg-foreground/80"
+              className="w-full rounded-md bg-foreground px-4 py-2.5 text-sm text-background transition-colors hover:bg-foreground/80 sm:w-auto"
             >
               Subscribe
             </button>
