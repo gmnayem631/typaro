@@ -36,10 +36,11 @@ export function Hero() {
           setCharIndex((i) => i + 1);
         }, 80);
       } else {
-        setTimeout(() => {
+        timeout = setTimeout(() => {
+          // assign to timeout so it gets cleaned up
           setCharIndex(0);
           setPhase("typing-variant");
-        }, 0);
+        }, 80);
       }
     }
 
