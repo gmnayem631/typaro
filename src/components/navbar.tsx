@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { useSession } from "@/lib/authClient";
+import { authClient } from "@/lib/authClient";
 import { ThemeToggle } from "@/components/ui/themeToggle";
 import { Menu, X } from "lucide-react";
 
@@ -15,7 +15,7 @@ const NAV_LINKS = [
 
 export function Navbar() {
   const pathname = usePathname();
-  const { data, isPending } = useSession();
+  const { data, isPending } = authClient.useSession();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 

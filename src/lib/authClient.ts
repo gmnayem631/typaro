@@ -1,6 +1,5 @@
-// Faisal Bhai replace this with real Better Auth client
+import { createAuthClient } from "better-auth/react";
 
-export const useSession = () => ({
-  data: null as { user: { name: string; image?: string } } | null,
-  isPending: false,
+export const authClient = createAuthClient({
+  //you can pass client configuration here
 });
