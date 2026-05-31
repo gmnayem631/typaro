@@ -42,7 +42,6 @@ export function AuthQuote() {
   const [charIndex, setCharIndex] = useState(0);
   const [deleting, setDeleting] = useState(false);
 
-   
   useEffect(() => {
     const current = QUOTES[qIndex];
     let timeout: ReturnType<typeof setTimeout>;
@@ -82,7 +81,7 @@ export function AuthQuote() {
       </Link>
 
       <div className="space-y-4">
-        <p className="font-mono text-lg leading-relaxed text-foreground">
+        <p className="font-mono text-base leading-relaxed text-foreground">
           &ldquo;{displayed}
           <span className="cursor-blink ml-0.5 inline-block h-4 w-0.5 bg-current align-middle" />
           &rdquo;
