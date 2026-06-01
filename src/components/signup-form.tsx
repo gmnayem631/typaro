@@ -37,6 +37,13 @@ export function SignUpForm() {
     );
   };
 
+  const handleGoogleSignIn = async () => {
+    await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "/",
+    });
+  };
+
   return (
     <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
       <div className="space-y-1.5">
@@ -130,7 +137,9 @@ export function SignUpForm() {
 
       <button
         type="button"
-        className="flex w-full items-center justify-center gap-3 rounded-md border border-border py-2.5 text-sm text-foreground transition-colors hover:bg-muted"
+        onClick={handleGoogleSignIn}
+        disabled={isSubmitting}
+        className="flex w-full items-center justify-center gap-3 rounded-md border border-border py-2.5 text-sm text-foreground transition-colors hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50"
       >
         <svg width="16" height="16" viewBox="0 0 24 24">
           <path
