@@ -25,6 +25,10 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const handleSignOut = async () => {
+    await authClient.signOut();
+  };
+
   return (
     <header
       className={`sticky top-0 z-50 w-full transition-all duration-300 ${
@@ -77,6 +81,12 @@ export function Navbar() {
                     {data.user.name?.[0]?.toUpperCase() ?? "U"}
                   </span>
                   <span>{data.user.name}</span>
+                  <button
+                    onClick={handleSignOut}
+                    className="rounded-md bg-foreground px-3 py-1.5 text-sm text-background transition-colors hover:bg-foreground/80"
+                  >
+                    Sign out
+                  </button>
                 </div>
               ) : (
                 <>
@@ -150,6 +160,12 @@ export function Navbar() {
                     {data.user.name?.[0]?.toUpperCase() ?? "U"}
                   </span>
                   <span>{data.user.name}</span>
+                  <button
+                    onClick={handleSignOut}
+                    className="rounded-md bg-foreground px-3 py-1.5 text-sm text-background transition-colors hover:bg-foreground/80"
+                  >
+                    Sign out
+                  </button>
                 </div>
               ) : (
                 <div className="flex gap-2 pt-1">
