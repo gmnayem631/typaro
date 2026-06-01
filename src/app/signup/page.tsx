@@ -2,8 +2,14 @@ import Link from "next/link";
 import { AuthQuote } from "@/components/authQuote";
 import { ArrowLeft } from "lucide-react";
 import { SignUpForm } from "@/components/signup-form";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
-export default function SignupPage() {
+export default async function SignupPage() {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (session) redirect("/");
+
   return (
     <div className="flex min-h-screen flex-col lg:flex-row">
       {/* Left panel */}
