@@ -48,6 +48,11 @@ export default function CreateBlogPage() {
     defaultValues: { readingTime: 5 },
   });
 
+  // set author from current session user
+  useEffect(() => {
+    if (data?.user?.name) setValue("author", data.user.name);
+  }, [data, setValue]);
+
   const contentValue = watch("content", "");
   const titleValue = watch("title", "");
   const excerptValue = watch("excerpt", "");
@@ -219,6 +224,8 @@ export default function CreateBlogPage() {
           </div>
 
           <div className="space-y-8">
+            {/* hidden author field populated from session */}
+            <input type="hidden" {...register("author")} />
             <div className="space-y-2">
               <label className="font-mono text-xs tracking-widest text-muted-foreground uppercase">
                 Excerpt
