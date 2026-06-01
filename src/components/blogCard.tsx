@@ -48,7 +48,8 @@ export function BlogCard({
             {excerpt}
           </p>
 
-          <div className="flex items-center gap-1.5 font-mono text-xs text-muted-foreground">
+          {/* Meta */}
+          <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 font-mono text-xs text-muted-foreground">
             <span>{author.name ?? "Anonymous"}</span>
             <span>·</span>
             <span>{date}</span>
