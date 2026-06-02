@@ -92,7 +92,7 @@ export function Navbar() {
           {!isPending && (
             <>
               {session ? (
-                <DropdownMenu>
+                <DropdownMenu modal={false}>
                   <DropdownMenuTrigger asChild>
                     <button
                       type="button"
@@ -223,7 +223,7 @@ export function Navbar() {
           {!isPending && (
             <>
               {session ? (
-                <DropdownMenu>
+                <DropdownMenu modal={false}>
                   <DropdownMenuTrigger asChild>
                     <button
                       type="button"
