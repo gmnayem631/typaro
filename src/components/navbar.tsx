@@ -96,7 +96,7 @@ export function Navbar() {
                   <DropdownMenuTrigger asChild>
                     <button
                       type="button"
-                      className="rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      className="rounded-full focus:outline-none"
                       aria-label="User menu"
                     >
                       <Avatar className="h-6 w-6">
