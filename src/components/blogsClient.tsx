@@ -20,7 +20,7 @@ type Post = {
 export function BlogsClient({ posts }: { posts: Post[] }) {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [activeTags, setActiveTags] = useState<string[]>([]);
 
   const categories = useMemo(
     () =>
@@ -50,14 +50,15 @@ export function BlogsClient({ posts }: { posts: Post[] }) {
         activeCategory === null || post.category.slug === activeCategory;
 
       const matchesTag =
-        activeTag === null || post.tags.some((t) => t.slug === activeTag);
+        activeTags.length === 0 ||
+        post.tags.some((t) => activeTags.includes(t.slug));
 
       return matchesSearch && matchesCategory && matchesTag;
     });
-  }, [posts, search, activeCategory, activeTag]);
+  }, [posts, search, activeCategory, activeTags]);
 
   const hasFilters =
-    search !== "" || activeCategory !== null || activeTag !== null;
+    search !== "" || activeCategory !== null || activeTags.length > 0;
 
   return (
     <div>
@@ -112,10 +113,14 @@ export function BlogsClient({ posts }: { posts: Post[] }) {
             key={tag.slug}
             type="button"
             onClick={() =>
-              setActiveTag(activeTag === tag.slug ? null : tag.slug)
+              setActiveTags((prev) =>
+                prev.includes(tag.slug)
+                  ? prev.filter((t) => t !== tag.slug)
+                  : [...prev, tag.slug],
+              )
             }
             className={`font-mono text-xs transition-colors ${
-              activeTag === tag.slug
+              activeTags.includes(tag.slug)
                 ? "text-foreground"
                 : "text-muted-foreground/60 hover:text-muted-foreground"
             }`}
@@ -136,7 +141,7 @@ export function BlogsClient({ posts }: { posts: Post[] }) {
             onClick={() => {
               setSearch("");
               setActiveCategory(null);
-              setActiveTag(null);
+              setActiveTags([]);
             }}
             className="font-mono text-xs text-muted-foreground transition-colors hover:text-foreground"
           >

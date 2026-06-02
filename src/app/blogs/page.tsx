@@ -115,9 +115,6 @@ export default function BlogsPage() {
         <h1 className="font-serif text-4xl tracking-tight text-foreground italic sm:text-5xl">
           The blog.
         </h1>
-        <p className="text-sm text-muted-foreground">
-          {MOCK_POSTS.length} posts published
-        </p>
       </div>
 
       <BlogsClient posts={MOCK_POSTS} />
