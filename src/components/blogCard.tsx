@@ -20,6 +20,7 @@ export function BlogCard({
   slug,
   author,
   category,
+  tags,
   createdAt,
   readingTime,
   index,
@@ -32,9 +33,9 @@ export function BlogCard({
 
   return (
     <Link href={`/blogs/${slug}`} className="group block">
-      <article className="flex gap-6 border-b border-border py-8 transition-colors first:border-t first:pt-8">
+      <article className="flex gap-3 border-b border-border py-8 transition-colors first:border-t first:pt-8 md:gap-6">
         {/* Index number */}
-        <span className="mt-1 w-8 shrink-0 font-mono text-xs text-muted-foreground/40">
+        <span className="mt-1 shrink-0 font-mono text-xs text-muted-foreground/40 md:w-8">
           {String(index).padStart(2, "0")}
         </span>
 
@@ -58,6 +59,20 @@ export function BlogCard({
             <span>·</span>
             <span>{category.name}</span>
           </div>
+
+          {/* Tags */}
+          {tags.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {tags.map((tag) => (
+                <span
+                  key={tag.slug}
+                  className="font-mono text-xs text-muted-foreground/60"
+                >
+                  #{tag.name}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Arrow */}
