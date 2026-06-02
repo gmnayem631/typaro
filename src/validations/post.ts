@@ -22,6 +22,7 @@ export const createPostSchema = z.object({
     .or(z.literal("")),
 
   readingTime: z.coerce.number().min(1).max(60),
+  author: z.string().min(3, "At least 3 characters"),
 });
 
 export type CreatePostInput = z.infer<typeof createPostSchema>;

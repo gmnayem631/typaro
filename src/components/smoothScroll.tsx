@@ -8,7 +8,7 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (pathname === "/about") return;
+    if (pathname === "/about" || pathname === "/blogs/create") return;
 
     const lenis = new Lenis({
       duration: 1.2,
