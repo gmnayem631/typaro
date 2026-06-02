@@ -141,3 +141,7 @@
 .cursor-blink {
   animation: blink 1s step-start infinite;
 }
+
+html {
+  scrollbar-gutter: stable;
+}
