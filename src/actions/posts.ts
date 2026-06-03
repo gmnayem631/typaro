@@ -1,11 +1,10 @@
 "use server";
 
 import { prisma as db } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { revalidatePath } from "next/cache";
 
 export type PostWithRelations = Awaited<ReturnType<typeof getPosts>>[number];
+export type PostDetail = NonNullable<Awaited<ReturnType<typeof getPostBySlug>>>;
+
 export type PostFilters = {
   search?: string;
   categorySlug?: string;
@@ -44,5 +43,16 @@ export async function getPosts(filters: PostFilters = {}) {
       tags: true,
     },
     orderBy: { createdAt: "desc" },
+  });
+}
+
+export async function getPostBySlug(slug: string) {
+  return db.post.findUnique({
+    where: { slug },
+    include: {
+      author: { select: { name: true, image: true } },
+      category: true,
+      tags: true,
+    },
   });
 }
