@@ -1,4 +1,4 @@
-import { BlogCard } from "@/components/blogCard";
+import { BlogsClient } from "@/components/blogsClient";
 
 const MOCK_POSTS = [
   {
@@ -105,28 +105,19 @@ const MOCK_POSTS = [
   },
 ];
 
-export default async function BlogsPage() {
+export default function BlogsPage() {
   return (
     <div className="py-16">
-      {/* Header */}
-      <div className="mb-12 space-y-3">
+      <div className="mb-5 space-y-3">
         <span className="font-mono text-xs tracking-[0.25em] text-muted-foreground uppercase">
           All posts
         </span>
         <h1 className="font-serif text-4xl tracking-tight text-foreground italic sm:text-5xl">
           The blog.
         </h1>
-        <p className="text-sm text-muted-foreground">
-          {MOCK_POSTS.length} posts published
-        </p>
       </div>
 
-      {/* Grid */}
-      <div>
-        {MOCK_POSTS.map((post, i) => (
-          <BlogCard key={post.id} {...post} index={i + 1} />
-        ))}
-      </div>
+      <BlogsClient posts={MOCK_POSTS} />
     </div>
   );
 }

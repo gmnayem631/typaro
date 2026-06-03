@@ -15,6 +15,19 @@ const MOCK_CATEGORIES = [
   { id: "5", name: "Culture", slug: "culture" },
 ];
 
+const MOCK_TAGS = [
+  { id: "1", name: "craft", slug: "craft" },
+  { id: "2", name: "tips", slug: "tips" },
+  { id: "3", name: "dev", slug: "dev" },
+  { id: "4", name: "career", slug: "career" },
+  { id: "5", name: "nextjs", slug: "nextjs" },
+  { id: "6", name: "teamwork", slug: "teamwork" },
+  { id: "7", name: "habit", slug: "habit" },
+  { id: "8", name: "reading", slug: "reading" },
+  { id: "9", name: "ai", slug: "ai" },
+  { id: "10", name: "writing", slug: "writing" },
+];
+
 function autoResize(el: HTMLTextAreaElement | null) {
   if (!el) return;
 
@@ -32,6 +45,7 @@ function autoResize(el: HTMLTextAreaElement | null) {
 export default function CreateBlogForm() {
   const { data } = authClient.useSession();
   const router = useRouter();
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [step, setStep] = useState<"write" | "meta">("write");
   const [wordCount, setWordCount] = useState(0);
   const titleRef = useRef<HTMLTextAreaElement | null>(null);
@@ -58,6 +72,16 @@ export default function CreateBlogForm() {
   const excerptValue = watch("excerpt", "");
   const readingTimeValue = watch("readingTime", 5);
   const categoryIdValue = watch("categoryId", "");
+
+  const toggleTag = (id: string) => {
+    setSelectedTags((prev) => {
+      const next = prev.includes(id)
+        ? prev.filter((t) => t !== id)
+        : [...prev, id];
+      setValue("tagIds", next);
+      return next;
+    });
+  };
 
   const category = MOCK_CATEGORIES.find(
     (cat) => cat.id === categoryIdValue,
@@ -276,6 +300,36 @@ export default function CreateBlogForm() {
                 </p>
               )}
             </div>
+            {/* tags */}
+            <div className="space-y-2">
+              <label className="font-mono text-xs tracking-widest text-muted-foreground uppercase">
+                Tags{" "}
+                <span className="text-muted-foreground/50 normal-case">
+                  (optional)
+                </span>
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {MOCK_TAGS.map((tag) => (
+                  <button
+                    key={tag.id}
+                    type="button"
+                    onClick={() => toggleTag(tag.id)}
+                    className={`font-mono text-xs transition-colors ${
+                      selectedTags.includes(tag.id)
+                        ? "text-foreground"
+                        : "text-muted-foreground/50 hover:text-muted-foreground"
+                    }`}
+                  >
+                    #{tag.name}
+                  </button>
+                ))}
+              </div>
+              {errors.tagIds && (
+                <p className="font-mono text-xs text-destructive">
+                  {errors.tagIds.message}
+                </p>
+              )}
+            </div>
 
             <div className="space-y-2">
               <label className="font-mono text-xs tracking-widest text-muted-foreground uppercase">
@@ -347,6 +401,20 @@ export default function CreateBlogForm() {
                   <span>·</span>
                   <span>{category.name}</span>
                 </div>
+                {selectedTags.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {MOCK_TAGS.filter((t) => selectedTags.includes(t.id)).map(
+                      (tag) => (
+                        <span
+                          key={tag.id}
+                          className="font-mono text-xs text-muted-foreground/60"
+                        >
+                          #{tag.name}
+                        </span>
+                      ),
+                    )}
+                  </div>
+                )}
               </div>
             </article>
           </div>
