@@ -23,11 +23,10 @@ export function LoginForm() {
       {
         email: data.email,
         password: data.password,
-        callbackURL: "/",
       },
       {
         onSuccess: () => {
-          router.push("/blogs/manage");
+          setTimeout(() => router.push("/blogs/manage"), 50);
         },
         onError: (ctx) => {
           setError("root", { message: ctx.error.message });
@@ -39,7 +38,7 @@ export function LoginForm() {
   const handleGoogleSignIn = async () => {
     await authClient.signIn.social({
       provider: "google",
-      callbackURL: "/",
+      callbackURL: "/blogs/manage",
     });
   };
 

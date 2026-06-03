@@ -87,7 +87,7 @@ export function Navbar() {
 
           <div className="h-5 w-px rotate-12 bg-border" />
 
-          {isPending && <Spinner />}
+          {/* {isPending && <Spinner />} */}
 
           {!isPending && (
             <>
