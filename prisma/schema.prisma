@@ -81,6 +81,7 @@ model Post {
   slug        String   @unique
   excerpt     String
   content     String   @db.Text
+  aiSummary   String?  @db.Text
   coverImage  String?
   readingTime Int      @default(5)
   published   Boolean  @default(true)
