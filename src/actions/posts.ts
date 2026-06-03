@@ -1,6 +1,9 @@
 "use server";
 
 import { prisma as db } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { revalidatePath } from "next/cache";
 
 export type PostWithRelations = Awaited<ReturnType<typeof getPosts>>[number];
 export type PostDetail = NonNullable<Awaited<ReturnType<typeof getPostBySlug>>>;
@@ -57,4 +60,41 @@ export async function getPostBySlug(slug: string) {
       tags: true,
     },
   });
+}
+
+export async function getPostsByAuthor() {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  return db.post.findMany({
+    where: {
+      authorId: session.user.id,
+    },
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      createdAt: true,
+      category: {
+        select: {
+          name: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}
+
+export async function deletePost(id: string) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) throw new Error("Unauthorized");
+
+  const post = await db.post.findUnique({ where: { id } });
+  if (!post || post.authorId !== session.user.id) throw new Error("Forbidden");
+
+  await db.post.delete({ where: { id } });
+  revalidatePath("/blogs");
+  revalidatePath("/blogs/manage");
 }
