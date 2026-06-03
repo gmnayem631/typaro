@@ -9,10 +9,11 @@ export type PostFilters = {
   search?: string;
   categorySlug?: string;
   tagSlugs?: string[];
+  limit?: number;
 };
 
 export async function getPosts(filters: PostFilters = {}) {
-  const { search, categorySlug, tagSlugs } = filters;
+  const { search, categorySlug, tagSlugs, limit } = filters;
 
   return db.post.findMany({
     where: {
@@ -43,6 +44,7 @@ export async function getPosts(filters: PostFilters = {}) {
       tags: true,
     },
     orderBy: { createdAt: "desc" },
+    ...(limit && { take: limit }),
   });
 }
 
