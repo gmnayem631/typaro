@@ -1,64 +1,69 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useDebouncedCallback } from "use-debounce";
 import { BlogCard } from "@/components/blogCard";
 import { Search, X } from "lucide-react";
+import type { PostWithRelations } from "@/actions/posts";
+import type { Category } from "@/actions/categories";
+import type { Tag } from "@/actions/tags";
 
-type Post = {
-  id: string;
-  title: string;
-  excerpt: string;
-  slug: string;
-  coverImage?: string | null;
-  author: { name: string | null };
-  category: { name: string; slug: string };
-  tags: { name: string; slug: string }[];
-  createdAt: Date;
-  readingTime: number;
+type Props = {
+  posts: PostWithRelations[];
+  categories: Category[];
+  tags: Tag[];
+  currentSearch: string;
+  currentCategory: string;
+  currentTags: string[];
 };
 
-export function BlogsClient({ posts }: { posts: Post[] }) {
-  const [search, setSearch] = useState("");
-  const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [activeTags, setActiveTags] = useState<string[]>([]);
+export function BlogsClient({
+  posts,
+  categories,
+  tags,
+  currentSearch,
+  currentCategory,
+  currentTags,
+}: Props) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const categories = useMemo(
-    () =>
-      Array.from(new Set(posts.map((p) => p.category.slug))).map((slug) => ({
-        slug,
-        name: posts.find((p) => p.category.slug === slug)!.category.name,
-      })),
-    [posts],
-  );
+  function updateParams(key: string, value: string | null) {
+    const params = new URLSearchParams(searchParams.toString());
 
-  const tags = useMemo(
-    () =>
-      Array.from(
-        new Map(posts.flatMap((p) => p.tags).map((t) => [t.slug, t])).values(),
-      ),
-    [posts],
-  );
+    if (value) {
+      params.set(key, value);
+    } else {
+      params.delete(key);
+    }
 
-  const filtered = useMemo(() => {
-    return posts.filter((post) => {
-      const matchesSearch =
-        search === "" ||
-        post.title.toLowerCase().includes(search.toLowerCase()) ||
-        post.excerpt.toLowerCase().includes(search.toLowerCase());
+    router.push(`/blogs?${params.toString()}`);
+  }
 
-      const matchesCategory =
-        activeCategory === null || post.category.slug === activeCategory;
+  function toggleTag(slug: string) {
+    const params = new URLSearchParams(searchParams.toString());
 
-      const matchesTag =
-        activeTags.length === 0 ||
-        post.tags.some((t) => activeTags.includes(t.slug));
+    const current = params.get("tags")?.split(",").filter(Boolean) ?? [];
 
-      return matchesSearch && matchesCategory && matchesTag;
-    });
-  }, [posts, search, activeCategory, activeTags]);
+    const next = current.includes(slug)
+      ? current.filter((t) => t !== slug)
+      : [...current, slug];
+
+    if (next.length) {
+      params.set("tags", next.join(","));
+    } else {
+      params.delete("tags");
+    }
+
+    router.push(`/blogs?${params.toString()}`);
+  }
+
+  const handleSearch = useDebouncedCallback((value: string) => {
+    updateParams("q", value || null);
+  }, 400);
 
   const hasFilters =
-    search !== "" || activeCategory !== null || activeTags.length > 0;
+    !!currentSearch || !!currentCategory || currentTags.length > 0;
 
   return (
     <div>
@@ -70,15 +75,15 @@ export function BlogsClient({ posts }: { posts: Post[] }) {
         />
         <input
           type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          defaultValue={currentSearch}
+          onChange={(e) => handleSearch(e.target.value)}
           placeholder="Search posts..."
           className="w-full rounded-md border border-border bg-transparent py-2.5 pr-4 pl-9 font-mono text-sm text-foreground transition-colors outline-none placeholder:text-muted-foreground/40 focus:border-foreground"
         />
-        {search && (
+        {currentSearch && (
           <button
             type="button"
-            onClick={() => setSearch("")}
+            onClick={() => updateParams("q", null)}
             className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
           >
             <X size={14} />
@@ -88,20 +93,23 @@ export function BlogsClient({ posts }: { posts: Post[] }) {
 
       {/* Category filters */}
       <div className="mb-3 flex flex-wrap gap-2">
-        {categories.map((cat) => (
+        {categories.map((category) => (
           <button
-            key={cat.slug}
+            key={category.slug}
             type="button"
             onClick={() =>
-              setActiveCategory(activeCategory === cat.slug ? null : cat.slug)
+              updateParams(
+                "category",
+                currentCategory === category.slug ? null : category.slug,
+              )
             }
             className={`rounded-sm px-2.5 py-1 font-mono text-xs transition-colors ${
-              activeCategory === cat.slug
+              currentCategory === category.slug
                 ? "bg-foreground text-background"
                 : "bg-muted text-muted-foreground hover:text-foreground"
             }`}
           >
-            {cat.name}
+            {category.name}
           </button>
         ))}
       </div>
@@ -112,15 +120,9 @@ export function BlogsClient({ posts }: { posts: Post[] }) {
           <button
             key={tag.slug}
             type="button"
-            onClick={() =>
-              setActiveTags((prev) =>
-                prev.includes(tag.slug)
-                  ? prev.filter((t) => t !== tag.slug)
-                  : [...prev, tag.slug],
-              )
-            }
+            onClick={() => toggleTag(tag.slug)}
             className={`font-mono text-xs transition-colors ${
-              activeTags.includes(tag.slug)
+              currentTags.includes(tag.slug)
                 ? "text-foreground"
                 : "text-muted-foreground/60 hover:text-muted-foreground"
             }`}
@@ -130,19 +132,16 @@ export function BlogsClient({ posts }: { posts: Post[] }) {
         ))}
       </div>
 
-      {/* Results count */}
+      {/* Results */}
       {hasFilters && (
         <div className="mb-6 flex items-center justify-between">
           <span className="font-mono text-xs text-muted-foreground">
-            {filtered.length} {filtered.length === 1 ? "post" : "posts"} found
+            {posts.length} {posts.length === 1 ? "post" : "posts"} found
           </span>
+
           <button
             type="button"
-            onClick={() => {
-              setSearch("");
-              setActiveCategory(null);
-              setActiveTags([]);
-            }}
+            onClick={() => router.push("/blogs")}
             className="font-mono text-xs text-muted-foreground transition-colors hover:text-foreground"
           >
             Clear filters
@@ -151,7 +150,7 @@ export function BlogsClient({ posts }: { posts: Post[] }) {
       )}
 
       {/* Posts */}
-      {filtered.length === 0 ? (
+      {posts.length === 0 ? (
         <div className="py-24 text-center">
           <p className="font-serif text-2xl text-muted-foreground italic">
             Nothing found.
@@ -162,7 +161,7 @@ export function BlogsClient({ posts }: { posts: Post[] }) {
         </div>
       ) : (
         <div>
-          {filtered.map((post, i) => (
+          {posts.map((post, i) => (
             <BlogCard key={post.id} {...post} index={i + 1} />
           ))}
         </div>

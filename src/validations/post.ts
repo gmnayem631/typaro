@@ -22,9 +22,13 @@ export const createPostSchema = z.object({
     .or(z.literal("")),
 
   readingTime: z.coerce.number().min(1).max(60),
-  author: z.string().min(3, "At least 3 characters"),
-  tagIds: z.array(z.string()).optional(),
+
+  tagIds: z.array(z.string()).default([]),
   aiSummary: z.string().optional(),
 });
 
-export type CreatePostInput = z.infer<typeof createPostSchema>;
+export type CreatePostInput = z.input<typeof createPostSchema>;
+
+export const editPostSchema = createPostSchema;
+
+export type EditPostInput = z.input<typeof editPostSchema>;
