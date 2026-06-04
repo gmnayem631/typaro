@@ -59,7 +59,8 @@ export function BlogsClient({
   }
 
   const handleSearch = useDebouncedCallback((value: string) => {
-    updateParams("q", value || null);
+    const trimmed = value.trim();
+    updateParams("q", trimmed || null);
   }, 400);
 
   const hasFilters =
