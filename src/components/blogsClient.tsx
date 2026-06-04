@@ -7,6 +7,7 @@ import { Search, X } from "lucide-react";
 import type { PostWithRelations } from "@/actions/posts";
 import type { Category } from "@/actions/categories";
 import type { Tag } from "@/actions/tags";
+import { useEffect } from "react";
 
 type Props = {
   posts: PostWithRelations[];
@@ -58,10 +59,22 @@ export function BlogsClient({
     router.push(`/blogs?${params.toString()}`);
   }
 
-  const handleSearch = useDebouncedCallback((value: string) => {
-    const trimmed = value.trim();
-    updateParams("q", trimmed || null);
-  }, 400);
+  const SEARCH_DEBOUNCE_MS = 400;
+  const handleSearch = useDebouncedCallback(
+    (value: string) => {
+      const trimmed = value.trim();
+      updateParams("q", trimmed || null);
+    },
+    SEARCH_DEBOUNCE_MS,
+    { leading: true, trailing: true },
+  );
+
+  // prevents memory leaking
+  useEffect(() => {
+    return () => {
+      handleSearch.cancel();
+    };
+  }, [handleSearch]);
 
   const hasFilters =
     !!currentSearch || !!currentCategory || currentTags.length > 0;
