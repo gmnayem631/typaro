@@ -14,7 +14,7 @@ export async function generateExcerpt(
           {
             parts: [
               {
-                text: `You are a blog writing assistant. Write a compelling 1-2 sentence excerpt for a blog post. Be concise and engaging. Return only the excerpt text, nothing else.
+                text: `You are a blog writing assistant. Write a compelling 1-2 sentence summary for a blog post. Be concise and engaging. Return only the summary text, nothing else.
                 Title: ${title}
                 Content: ${content.slice(0, 3000)}`,
               },
