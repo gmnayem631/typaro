@@ -143,6 +143,7 @@ export async function createPost(input: CreatePostInput) {
       title: data.title,
       slug,
       excerpt: data.excerpt,
+      aiSummary: data.aiSummary || null,
       content: data.content,
       coverImage: data.coverImage || null,
       readingTime: data.readingTime,
