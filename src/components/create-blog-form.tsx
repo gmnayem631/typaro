@@ -6,27 +6,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createPostSchema, type CreatePostInput } from "@/validations/post";
 import { authClient } from "@/lib/authClient";
-
-const MOCK_CATEGORIES = [
-  { id: "1", name: "Writing", slug: "writing" },
-  { id: "2", name: "Technology", slug: "technology" },
-  { id: "3", name: "AI", slug: "ai" },
-  { id: "4", name: "Life", slug: "life" },
-  { id: "5", name: "Culture", slug: "culture" },
-];
-
-const MOCK_TAGS = [
-  { id: "1", name: "craft", slug: "craft" },
-  { id: "2", name: "tips", slug: "tips" },
-  { id: "3", name: "dev", slug: "dev" },
-  { id: "4", name: "career", slug: "career" },
-  { id: "5", name: "nextjs", slug: "nextjs" },
-  { id: "6", name: "teamwork", slug: "teamwork" },
-  { id: "7", name: "habit", slug: "habit" },
-  { id: "8", name: "reading", slug: "reading" },
-  { id: "9", name: "ai", slug: "ai" },
-  { id: "10", name: "writing", slug: "writing" },
-];
+import { createPost } from "@/actions/posts";
+import type { Category } from "@/actions/categories";
+import type { Tag } from "@/actions/tags";
 
 function autoResize(el: HTMLTextAreaElement | null) {
   if (!el) return;
@@ -42,7 +24,13 @@ function autoResize(el: HTMLTextAreaElement | null) {
   });
 }
 
-export default function CreateBlogForm() {
+export default function CreateBlogForm({
+  categories,
+  tags,
+}: {
+  categories: Category[];
+  tags: Tag[];
+}) {
   const { data } = authClient.useSession();
   const router = useRouter();
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -59,13 +47,8 @@ export default function CreateBlogForm() {
     formState: { errors, isSubmitting },
   } = useForm<CreatePostInput>({
     resolver: zodResolver(createPostSchema),
-    defaultValues: { readingTime: 5 },
+    defaultValues: { readingTime: 5, tagIds: [] },
   });
-
-  // set author from current session user
-  useEffect(() => {
-    if (data?.user?.name) setValue("author", data.user.name);
-  }, [data, setValue]);
 
   const contentValue = watch("content", "");
   const titleValue = watch("title", "");
@@ -83,9 +66,7 @@ export default function CreateBlogForm() {
     });
   };
 
-  const category = MOCK_CATEGORIES.find(
-    (cat) => cat.id === categoryIdValue,
-  ) ?? {
+  const category = categories.find((cat) => cat.id === categoryIdValue) ?? {
     id: "",
     name: "Uncategorized",
     slug: "uncategorized",
@@ -117,9 +98,16 @@ export default function CreateBlogForm() {
     return () => cancelAnimationFrame(raf);
   }, [step]);
 
-  const onSubmit = async (data: CreatePostInput) => {
-    console.log(data);
-    router.push("/blogs/manage");
+  const onSubmit = async (input: CreatePostInput) => {
+    try {
+      await createPost(input);
+      router.push("/blogs/manage");
+      // TODO: show toast on success
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to publish. Try again.";
+      // TODO: show toast on error
+    }
   };
 
   const canProceed = titleValue.length >= 5 && contentValue.length >= 50;
@@ -248,8 +236,6 @@ export default function CreateBlogForm() {
           </div>
 
           <div className="space-y-8">
-            {/* hidden author field populated from session */}
-            <input type="hidden" {...register("author")} />
             <div className="space-y-2">
               <label className="font-mono text-xs tracking-widest text-muted-foreground uppercase">
                 Excerpt
@@ -284,7 +270,7 @@ export default function CreateBlogForm() {
                   Pick a category
                 </option>
 
-                {MOCK_CATEGORIES.map((cat) => (
+                {categories.map((cat) => (
                   <option
                     key={cat.id}
                     value={cat.id}
@@ -309,7 +295,7 @@ export default function CreateBlogForm() {
                 </span>
               </label>
               <div className="flex flex-wrap gap-2">
-                {MOCK_TAGS.map((tag) => (
+                {tags.map((tag) => (
                   <button
                     key={tag.id}
                     type="button"
@@ -403,16 +389,16 @@ export default function CreateBlogForm() {
                 </div>
                 {selectedTags.length > 0 && (
                   <div className="flex flex-wrap gap-1.5">
-                    {MOCK_TAGS.filter((t) => selectedTags.includes(t.id)).map(
-                      (tag) => (
+                    {tags
+                      .filter((t) => selectedTags.includes(t.id))
+                      .map((tag) => (
                         <span
                           key={tag.id}
                           className="font-mono text-xs text-muted-foreground/60"
                         >
                           #{tag.name}
                         </span>
-                      ),
-                    )}
+                      ))}
                   </div>
                 )}
               </div>
