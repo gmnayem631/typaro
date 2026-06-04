@@ -4,9 +4,10 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createPostSchema, type CreatePostInput } from "@/validations/post";
+import { editPostSchema, type EditPostInput } from "@/validations/post";
 import { authClient } from "@/lib/authClient";
-import { createPost } from "@/actions/posts";
+import { editPost } from "@/actions/posts";
+import type { PostForEdit } from "@/actions/posts";
 import type { Category } from "@/actions/categories";
 import type { Tag } from "@/actions/tags";
 
@@ -24,16 +25,22 @@ function autoResize(el: HTMLTextAreaElement | null) {
   });
 }
 
-export default function CreateBlogForm({
+export default function EditBlogForm({
+  post,
   categories,
   tags,
 }: {
+  post: PostForEdit;
   categories: Category[];
   tags: Tag[];
 }) {
   const { data } = authClient.useSession();
   const router = useRouter();
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+  // Seed tag selection from the existing post
+  const initialTagIds = post.tags.map((t) => t.id);
+  const [selectedTags, setSelectedTags] = useState<string[]>(initialTagIds);
+
   const [step, setStep] = useState<"write" | "meta">("write");
   const [wordCount, setWordCount] = useState(0);
   const titleRef = useRef<HTMLTextAreaElement | null>(null);
@@ -45,15 +52,23 @@ export default function CreateBlogForm({
     watch,
     setValue,
     formState: { errors, isSubmitting },
-  } = useForm<CreatePostInput>({
-    resolver: zodResolver(createPostSchema),
-    defaultValues: { readingTime: 5, tagIds: [] },
+  } = useForm<EditPostInput>({
+    resolver: zodResolver(editPostSchema),
+    defaultValues: {
+      title: post.title,
+      excerpt: post.excerpt,
+      content: post.content,
+      coverImage: post.coverImage ?? "",
+      readingTime: post.readingTime,
+      categoryId: post.categoryId,
+      tagIds: initialTagIds,
+    },
   });
 
   const contentValue = watch("content", "");
   const titleValue = watch("title", "");
   const excerptValue = watch("excerpt", "");
-  const readingTimeValue = watch("readingTime", 5);
+  const readingTimeValue = watch("readingTime", post.readingTime);
   const categoryIdValue = watch("categoryId", "");
 
   const toggleTag = (id: string) => {
@@ -90,7 +105,6 @@ export default function CreateBlogForm({
 
   useEffect(() => {
     if (step !== "write") return;
-    // wait one frame for the DOM to paint
     const raf = requestAnimationFrame(() => {
       autoResize(titleRef.current);
       autoResize(contentRef.current);
@@ -98,15 +112,15 @@ export default function CreateBlogForm({
     return () => cancelAnimationFrame(raf);
   }, [step]);
 
-  const onSubmit = async (input: CreatePostInput) => {
+  const onSubmit = async (input: EditPostInput) => {
     try {
-      await createPost(input);
+      await editPost(post.id, input);
+      // toast.success("Post updated!");
       router.push("/blogs/manage");
-      // TODO: show toast on success
     } catch (err) {
       const message =
-        err instanceof Error ? err.message : "Failed to publish. Try again.";
-      // TODO: show toast on error
+        err instanceof Error ? err.message : "Failed to update. Try again.";
+      // toast.error(message);
     }
   };
 
@@ -162,7 +176,7 @@ export default function CreateBlogForm({
               disabled={isSubmitting}
               className="rounded-md bg-foreground px-4 py-1.5 font-mono text-xs text-background transition-colors hover:bg-foreground/80 disabled:cursor-not-allowed disabled:opacity-30"
             >
-              {isSubmitting ? "publishing..." : "publish"}
+              {isSubmitting ? "updating..." : "update"}
             </button>
           )}
         </div>
@@ -259,7 +273,6 @@ export default function CreateBlogForm({
               </label>
               <select
                 {...register("categoryId")}
-                defaultValue=""
                 className="w-full rounded-md border border-border bg-transparent px-4 py-2.5 text-sm text-foreground outline-none focus:border-foreground"
               >
                 <option
@@ -286,6 +299,7 @@ export default function CreateBlogForm({
                 </p>
               )}
             </div>
+
             {/* tags */}
             <div className="space-y-2">
               <label className="font-mono text-xs tracking-widest text-muted-foreground uppercase">
@@ -359,6 +373,7 @@ export default function CreateBlogForm({
                 </p>
               )}
             </div>
+
             {/* BlogCard Clone to preview */}
             <article className="flex gap-6 border-b border-border py-8 transition-colors first:border-t first:pt-8">
               {/* Content */}
