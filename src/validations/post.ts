@@ -27,3 +27,7 @@ export const createPostSchema = z.object({
 });
 
 export type CreatePostInput = z.input<typeof createPostSchema>;
+
+export const editPostSchema = createPostSchema;
+
+export type EditPostInput = z.input<typeof editPostSchema>;
