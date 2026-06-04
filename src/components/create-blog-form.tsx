@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createPostSchema, type CreatePostInput } from "@/validations/post";
 import { authClient } from "@/lib/authClient";
+import { generateExcerpt } from "@/actions/generate-excerpt";
 
 const MOCK_CATEGORIES = [
   { id: "1", name: "Writing", slug: "writing" },
@@ -50,6 +51,25 @@ export default function CreateBlogForm() {
   const [wordCount, setWordCount] = useState(0);
   const titleRef = useRef<HTMLTextAreaElement | null>(null);
   const contentRef = useRef<HTMLTextAreaElement | null>(null);
+  const [isGeneratingExcerpt, setIsGeneratingExcerpt] = useState(false);
+
+  // AI generated excerpt
+  const handleContinue = async () => {
+    setIsGeneratingExcerpt(true);
+
+    try {
+      const generated = await generateExcerpt(titleValue, contentValue);
+      if (generated) {
+        setValue("excerpt", generated);
+      }
+    } catch {
+      // fail silently — user can write their own
+    } finally {
+      setIsGeneratingExcerpt(false);
+    }
+
+    setStep("meta");
+  };
 
   const {
     register,
@@ -161,11 +181,11 @@ export default function CreateBlogForm() {
           {step === "write" ? (
             <button
               type="button"
-              disabled={!canProceed}
-              onClick={() => setStep("meta")}
+              disabled={!canProceed || isGeneratingExcerpt}
+              onClick={handleContinue}
               className="rounded-md bg-foreground px-4 py-1.5 font-mono text-xs text-background transition-colors hover:bg-foreground/80 disabled:cursor-not-allowed disabled:opacity-30"
             >
-              continue →
+              {isGeneratingExcerpt ? "Generating Excerpt..." : "Continue →"}
             </button>
           ) : (
             <button
@@ -252,7 +272,12 @@ export default function CreateBlogForm() {
             <input type="hidden" {...register("author")} />
             <div className="space-y-2">
               <label className="font-mono text-xs tracking-widest text-muted-foreground uppercase">
-                Excerpt
+                Excerpt{" "}
+                {excerptValue && isGeneratingExcerpt === false && (
+                  <span className="text-muted-foreground/50 normal-case">
+                    · AI generated
+                  </span>
+                )}
               </label>
               <textarea
                 {...register("excerpt")}
