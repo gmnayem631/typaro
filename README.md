@@ -1,36 +1,103 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Typaro | [Live Demo](https://typaro.vercel.app)
+
+An AI-integrated blogging platform built with Next.js, Prisma, Better Auth, and Gemini Api.
+
+## Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **Styling**: Tailwind CSS, shadcn/ui
+- **Database**: Neon PostgreSQL
+- **ORM**: Prisma
+- **Auth**: Better Auth (credentials + Google OAuth)
+- **AI**: Google Gemini (blog post summaries)
+- **Animations**: GSAP, Framer Motion, Lenis
+
+## Team
+
+| Member              | Role                  |
+| ------------------- | --------------------- |
+| Farhan Aziz         | UI & Frontend         |
+| Faisal Mahmud       | Auth & Infrastructure |
+| Gulam Mustafa Nayem | Blog Core & AI        |
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- pnpm
+- A Neon PostgreSQL database
+- Google OAuth credentials (optional)
+- Gemini API key (optional, for AI summaries)
+
+### Setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# Clone the repo
+git clone [https://github.com/gmnayem631/typaro](https://github.com/gmnayem631/typaro)
+cd typaro
+
+# Install dependencies
+pnpm install
+
+# Copy environment variables
+cp .env.example .env
+
+# Fill in your environment variables
+
+# Run database migrations
+pnpm prisma migrate deploy
+
+# Seed the database
+pnpm prisma db seed
+
+# Start the dev server
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Variable               | Description                       |
+| ---------------------- | --------------------------------- |
+| `DATABASE_URL`         | Neon PostgreSQL connection string |
+| `BETTER_AUTH_SECRET`   | Secret key for Better Auth        |
+| `BETTER_AUTH_URL`      | Base URL of the app               |
+| `GOOGLE_CLIENT_ID`     | Google OAuth client ID            |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret        |
+| `GEMINI_API_KEY`       | Gemini API key for AI summaries   |
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+├── app/                  # Next.js App Router pages
+│   ├── (auth)/           # Auth routes (login, signup)
+│   ├── blogs/            # Blog routes
+│   │   ├── [id]/         # Blog detail
+│   │   ├── create/       # Create post
+│   │   └── manage/       # Manage posts
+│   └── about/            # About page
+├── components/           # Shared UI components
+├── lib/                  # Auth, Prisma, utilities
+├── actions/              # Server actions
+└── validations/          # Zod schemas
+prisma/
+├── schema.prisma         # Database schema
+└── seed.ts               # Seed data
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Pages
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Route              | Description                          | Auth      |
+| ------------------ | ------------------------------------ | --------- |
+| `/`                | Homepage with hero and recent posts  | Public    |
+| `/blogs`           | Blog listing with search and filters | Public    |
+| `/blogs/[id]`      | Blog detail with AI summary          | Public    |
+| `/about`           | About page with scroll animations    | Public    |
+| `/login`           | Login with email or Google           | Public    |
+| `/signup`          | Signup with email or Google          | Public    |
+| `/blogs/create`    | Create a new post                    | Protected |
+| `/blogs/manage`    | Manage your posts                    | Protected |
+| `/blogs/[id]/edit` | Edit an existing blog post           | Protected |
