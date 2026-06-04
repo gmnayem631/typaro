@@ -52,6 +52,7 @@ export default function CreateBlogForm() {
   const titleRef = useRef<HTMLTextAreaElement | null>(null);
   const contentRef = useRef<HTMLTextAreaElement | null>(null);
   const [isGeneratingExcerpt, setIsGeneratingExcerpt] = useState(false);
+  // const [aiSummary, setAiSummary] = useState<string>("");
 
   // AI generated excerpt
   const handleContinue = async () => {
@@ -61,9 +62,11 @@ export default function CreateBlogForm() {
       const generated = await generateExcerpt(titleValue, contentValue);
       if (generated) {
         setValue("excerpt", generated);
+        setValue("aiSummary", generated);
+        // setAiSummary(generated);
       }
     } catch {
-      // fail silently — user can write their own
+      // setExcerptFailed(true);
     } finally {
       setIsGeneratingExcerpt(false);
     }
