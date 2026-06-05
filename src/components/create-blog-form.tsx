@@ -174,7 +174,7 @@ export default function CreateBlogForm({
               onClick={handleContinue}
               className="rounded-md bg-foreground px-4 py-1.5 font-mono text-xs text-background transition-colors hover:bg-foreground/80 disabled:cursor-not-allowed disabled:opacity-30"
             >
-              {isGeneratingExcerpt ? "Generating Excerpt..." : "Continue →"}
+              {isGeneratingExcerpt ? "Generating Summary..." : "Continue →"}
             </button>
           ) : (
             <button
