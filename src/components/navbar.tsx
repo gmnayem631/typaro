@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { redirect, usePathname } from "next/navigation";
+import { redirect, usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { authClient } from "@/lib/authClient";
 import { ThemeToggle } from "@/components/ui/themeToggle";
@@ -26,6 +26,7 @@ const NAV_LINKS = [
 
 export function Navbar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -38,7 +39,7 @@ export function Navbar() {
 
   const handleSignOut = async () => {
     await authClient.signOut();
-    redirect("/");
+    router.push("/");
   };
 
   return (
@@ -137,13 +138,19 @@ export function Navbar() {
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
-                      <Link href="/blogs/manage">
+                      <Link
+                        onClick={() => setMenuOpen(false)}
+                        href="/blogs/manage"
+                      >
                         <FileText className="mr-2 h-4 w-4" />
                         Manage
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link href="/blogs/create">
+                      <Link
+                        onClick={() => setMenuOpen(false)}
+                        href="/blogs/create"
+                      >
                         <Plus className="mr-2 h-4 w-4" />
                         Create
                       </Link>
@@ -273,23 +280,37 @@ export function Navbar() {
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
-                      <Link href="/blogs/manage">
+                      <Link
+                        onClick={() => setMenuOpen(false)}
+                        href="/blogs/manage"
+                      >
                         <FileText className="mr-2 h-4 w-4" />
                         Manage
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link href="/blogs/create">
+                      <Link
+                        onClick={() => setMenuOpen(false)}
+                        href="/blogs/create"
+                      >
                         <Plus className="mr-2 h-4 w-4" />
                         Create
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
-                      <Link href="/api/auth/logout">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          void handleSignOut();
+                          setMenuOpen(false);
+                        }}
+                        className="w-full justify-start"
+                      >
                         <LogOut className="mr-2 h-4 w-4" />
                         Logout
-                      </Link>
+                      </Button>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
