@@ -5,7 +5,15 @@ import { BlogCard } from "@/components/blogCard";
 import { getPosts } from "@/actions/posts";
 
 export default async function Home() {
-  const recentPosts = await getPosts({ limit: 3 });
+  // fetch posts, sort by published date desc and take the latest 3
+  const posts = await getPosts();
+  const recentPosts = (posts || [])
+    .slice()
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    )
+    .slice(0, 3);
 
   return (
     <div>

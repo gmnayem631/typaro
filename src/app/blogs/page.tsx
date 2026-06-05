@@ -28,7 +28,7 @@ export default async function BlogsPage({
   ]);
 
   return (
-    <div>
+    <div className="pt-16">
       <section className="mb-5 space-y-3">
         <span className="font-mono text-xs tracking-[0.25em] text-muted-foreground uppercase">
           All posts
