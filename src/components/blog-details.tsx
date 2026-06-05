@@ -78,7 +78,7 @@ export function BlogDetail({ post }: { post: PostDetail }) {
               AI Summary
             </span>
           </div>
-          {/* {post.aiSummary ? (
+          {post.aiSummary ? (
             <p className="text-sm leading-relaxed text-muted-foreground">
               {post.aiSummary}
             </p>
@@ -86,7 +86,7 @@ export function BlogDetail({ post }: { post: PostDetail }) {
             <p className="font-mono text-xs text-muted-foreground/50">
               Summary not available yet.
             </p>
-          )} */}
+          )}
         </div>
 
         {/* Divider */}

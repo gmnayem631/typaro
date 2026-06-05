@@ -24,6 +24,7 @@ export const createPostSchema = z.object({
   readingTime: z.coerce.number().min(1).max(60),
 
   tagIds: z.array(z.string()).default([]),
+  aiSummary: z.string().optional(),
 });
 
 export type CreatePostInput = z.input<typeof createPostSchema>;

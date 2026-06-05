@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createPostSchema, type CreatePostInput } from "@/validations/post";
 import { authClient } from "@/lib/authClient";
+import { generateExcerpt } from "@/actions/generate-excerpt";
 import { createPost } from "@/actions/posts";
 import type { Category } from "@/actions/categories";
 import type { Tag } from "@/actions/tags";
@@ -38,6 +39,26 @@ export default function CreateBlogForm({
   const [wordCount, setWordCount] = useState(0);
   const titleRef = useRef<HTMLTextAreaElement | null>(null);
   const contentRef = useRef<HTMLTextAreaElement | null>(null);
+  const [isGeneratingExcerpt, setIsGeneratingExcerpt] = useState(false);
+
+  // AI generated excerpt
+  const handleContinue = async () => {
+    setIsGeneratingExcerpt(true);
+
+    try {
+      const generated = await generateExcerpt(titleValue, contentValue);
+      if (generated) {
+        // setValue("excerpt", generated);
+        setValue("aiSummary", generated);
+      }
+    } catch {
+      // setExcerptFailed(true);
+    } finally {
+      setIsGeneratingExcerpt(false);
+    }
+
+    setStep("meta");
+  };
 
   const {
     register,
@@ -149,11 +170,11 @@ export default function CreateBlogForm({
           {step === "write" ? (
             <button
               type="button"
-              disabled={!canProceed}
-              onClick={() => setStep("meta")}
+              disabled={!canProceed || isGeneratingExcerpt}
+              onClick={handleContinue}
               className="rounded-md bg-foreground px-4 py-1.5 font-mono text-xs text-background transition-colors hover:bg-foreground/80 disabled:cursor-not-allowed disabled:opacity-30"
             >
-              continue →
+              {isGeneratingExcerpt ? "Generating Summary..." : "Continue →"}
             </button>
           ) : (
             <button
