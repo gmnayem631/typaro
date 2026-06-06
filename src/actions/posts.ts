@@ -121,6 +121,8 @@ export async function deletePost(id: string) {
   if (!post || post.authorId !== session.user.id) throw new Error("Forbidden");
 
   await db.post.delete({ where: { id } });
+
+  revalidatePath("/");
   revalidatePath("/blogs");
   revalidatePath("/blogs/manage");
 }
@@ -156,6 +158,7 @@ export async function createPost(input: CreatePostInput) {
     },
   });
 
+  revalidatePath("/");
   revalidatePath("/blogs");
   revalidatePath("/blogs/manage");
   return post;
@@ -225,6 +228,7 @@ export async function editPost(id: string, input: EditPostInput) {
     },
   });
 
+  revalidatePath("/");
   revalidatePath("/blogs");
   revalidatePath("/blogs/manage");
   revalidatePath(`/blogs/${slug}`);
